@@ -12,4 +12,5 @@ build:
 build-linux-amd64:
 	GOOS=linux GOARCH=amd64 go build -o tunnel-linux-amd64
 	
-
+build-windows-amd64:
+	GOOS=windows GOARCH=amd64 go build -o tunnel-windows-amd64
