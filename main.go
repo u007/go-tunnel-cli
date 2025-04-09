@@ -37,10 +37,13 @@ type Config struct {
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
+	// Setup custom logger
+	errorLogger := log.New(os.Stderr, "ERROR: ", log.LstdFlags | log.Lshortfile)
+
 	// Check DEBUG environment variable
 	if os.Getenv("DEBUG") != "1" {
-		log.SetOutput(io.Discard) // Discard log output if DEBUG is not "1"
-		// fmt.Fprintln(os.Stderr, "Debug logging disabled. Set DEBUG=1 to enable.") // Inform user
+		log.SetOutput(io.Discard) // Discard regular logs
+		fmt.Fprintln(os.Stderr, "Debug logging disabled. Set DEBUG=1 to enable detailed logs.")
 	} else {
 		log.Println("Debug logging enabled.")
 	}
@@ -57,7 +60,7 @@ func main() {
 	// --- Load Config ---
 	config, err := loadConfig(envFilePath)
 	if err != nil {
-		log.Fatalf("Error loading config from %s: %v", envFilePath, err)
+		errorLogger.Fatalf("Error loading config from %s: %v", envFilePath, err)
 	}
 
 	// --- Find Local Port if necessary ---
@@ -65,7 +68,7 @@ func main() {
 	if localPort == 0 {
 		p, err := findOpenPort()
 		if err != nil {
-			log.Fatalf("Failed to find an open local port: %v", err)
+			errorLogger.Fatalf("Failed to find an open local port: %v", err)
 		}
 		localPort = p
 		log.Printf("Using dynamically assigned local port: %d", localPort)
